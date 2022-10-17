@@ -1,4 +1,4 @@
-import cv2, random, os, shutil, string
+import cv2, random, os, shutil
 from collections import Counter
 import albumentations as A
 from os.path import isfile, join
@@ -54,37 +54,15 @@ def length_of_current_dir(directory):
 
 
 def define_aumentation_pipeline(transform="light"):
-    match transform:
-        case "light":
-            transform = A.Compose(
-                [
-                    A.HorizontalFlip(p=0.7),
-                    A.RandomBrightnessContrast(p=1),
-                    A.RandomGamma(p=1),
-                    A.CLAHE(p=1),
-                ],
-                p=1,
-            )
-        case "medium":
-            transform = A.Compose(
-                [
-                    A.HorizontalFlip(p=0.7),
-                    A.CLAHE(p=1),
-                    A.HueSaturationValue(
-                        hue_shift_limit=20, sat_shift_limit=50, val_shift_limit=50, p=1
-                    ),
-                ],
-                p=1,
-            )
-        case "strong":
-            transform = A.Compose(
-                [
-                    A.HorizontalFlip(p=0.7),
-                    A.ChannelShuffle(p=1),
-                ],
-                p=1,
-            )
-
+    transform = A.Compose(
+        [
+            A.HorizontalFlip(p=0.7),
+            A.RandomBrightnessContrast(p=1),
+            A.RandomGamma(p=1),
+            A.CLAHE(p=1),
+        ],
+        p=1,
+    )
     return transform
 
 
@@ -94,17 +72,9 @@ def convert_image(path: str):
 
 
 def generate_augmentation_image(path_image):
-    transforms = define_aumentation_pipeline(
-        random.choice(["light", "medium", "strong"])
-    )
+    transforms = define_aumentation_pipeline()
     augmented_image = transforms(image=convert_image(path_image))["image"]
     return augmented_image
-
-
-#  def generate_augmentation_image_name(
-#      size=32, chars=string.ascii_uppercase + string.digits
-#  ):
-#      return "".join(random.choice(chars) for _ in range(size))
 
 
 def add_single_augmentation_image_to_dir(save_path: str, path_image: str):
@@ -125,19 +95,6 @@ def add_multiple_aumentation_images_to_dir(path_images, save_dir, maximum_pictur
                 break
 
 
-#  def rename_file_train_subdir(path_images, save_dir):
-#      count = 0
-#      while count < length_of_current_dir(save_dir):
-#          for path_image in path_images:
-#              count += 1
-#              if not os.path.exists(f".\\{save_dir}\\{count}.png"):
-#                  os.rename(path_image, f".\\{save_dir}\\{count}.png")
-#              else:
-#                  pass
-#              if count == length_of_current_dir(save_dir):
-#                  break
-
-
 def main():
     obj = open_file("train.csv")
     train_dir = create_train_dir("train_file")
@@ -149,14 +106,7 @@ def main():
         path_images = [
             join(save_dir, f) for f in os.listdir(save_dir) if isfile(join(save_dir, f))
         ]
-        add_multiple_aumentation_images_to_dir(path_images, save_dir)
-
-    #  for save_dir in list(lst_dir):
-    #      # Create a list of image path each subdir
-    #      path_images = [
-    #          join(save_dir, f) for f in os.listdir(save_dir) if isfile(join(save_dir, f))
-    #      ]
-    #      rename_file_train_subdir(path_images, save_dir)
+        add_multiple_aumentation_images_to_dir(path_images, save_dir, maximum_picture=6)
 
 
 if __name__ == "__main__":
