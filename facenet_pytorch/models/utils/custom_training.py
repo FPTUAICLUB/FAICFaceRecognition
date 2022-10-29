@@ -97,7 +97,8 @@ def pass_epoch(
     for i_batch, (x, y) in enumerate(loader):
         x = x.to(device)
         y = y.to(device)
-        y_pred = model(x)
+        # y_pred = model(x)
+        y_pred = model(x, y)
         loss_batch = loss_fn(y_pred, y)
 
         if model.training:
