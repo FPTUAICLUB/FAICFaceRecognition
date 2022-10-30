@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import time
+from icecream import ic
 
 
 class Logger(object):
@@ -93,7 +94,6 @@ def pass_epoch(
     metrics = {}
 
     i_batch = 0
-
     for i_batch, (x, y) in enumerate(loader):
         x = x.to(device)
         y = y.to(device)
@@ -119,19 +119,20 @@ def pass_epoch(
         
         loss_batch = loss_batch.detach().cpu()
         loss += loss_batch
+
         if show_running:
             logger(loss, metrics, i_batch)
         else:
             logger(loss_batch, metrics_batch, i_batch)
-    
+
+
     if model.training and scheduler is not None:
         scheduler.step()
 
     loss = loss / (i_batch + 1)
     metrics = {k: v / (i_batch + 1) for k, v in metrics.items()}
-            
     if writer is not None and not model.training:
-        writer.add_scalars('loss', {mode: loss.detach()}, writer.iteration)
+        writer.add_scalars('loss', {mode: loss}, writer.iteration)
         for metric_name, metric in metrics.items():
             writer.add_scalars(metric_name, {mode: metric})
 
