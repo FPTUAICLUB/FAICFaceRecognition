@@ -112,37 +112,37 @@ if __name__ == '__main__':
     # )
 
     # Warm-up
-    print('\n\nInitial')
-    print('-' * 10)
-    model.eval()
-    emb_vecs = []
-    labels = []
+    # print('\n\nInitial')
+    # print('-' * 10)
+    # model.eval()
+    # emb_vecs = []
+    # labels = []
 
-    for image_path in tqdm(glob.glob(eval_dir+'/train/*/*.jpg')):
-        label = image_path.split('/')[-2]
-        emb = embed_image(image_path, model, val_transform, device)
-        emb_vecs.append(emb)
-        labels.append(label)
+    # for image_path in tqdm(glob.glob(eval_dir+'/train/*/*.jpg')):
+    #     label = image_path.split('/')[-2]
+    #     emb = embed_image(image_path, model, val_transform, device)
+    #     emb_vecs.append(emb)
+    #     labels.append(label)
 
-    # save_pickle(emb_vecs, f'/home/dungmaster/MLProjects/AI-Checkin/data/embedding_data/embed_faces.pkl')
-    # save_pickle(labels, f'/home/dungmaster/MLProjects/AI-Checkin/data/embedding_data/labels.pkl')
+    # # save_pickle(emb_vecs, f'/home/dungmaster/MLProjects/AI-Checkin/data/embedding_data/embed_faces.pkl')
+    # # save_pickle(labels, f'/home/dungmaster/MLProjects/AI-Checkin/data/embedding_data/labels.pkl')
 
-    embed_faces = np.stack(emb_vecs)
-    embed_faces = np.squeeze(embed_faces, axis=1)
+    # embed_faces = np.stack(emb_vecs)
+    # embed_faces = np.squeeze(embed_faces, axis=1)
 
-    y_preds = []
-    y_gt = []
+    # y_preds = []
+    # y_gt = []
 
-    for image_path in tqdm(glob.glob(eval_dir+'/val/*/*.jpg')):
-        label = image_path.split('/')[-2]
-        emb = embed_image(image_path, model, val_transform, device)
-        y_pred = most_similarity(embed_faces, emb, labels)
-        y_preds.append(y_pred)
-        y_gt.append(label)
+    # for image_path in tqdm(glob.glob(eval_dir+'/val/*/*.jpg')):
+    #     label = image_path.split('/')[-2]
+    #     emb = embed_image(image_path, model, val_transform, device)
+    #     y_pred = most_similarity(embed_faces, emb, labels)
+    #     y_preds.append(y_pred)
+    #     y_gt.append(label)
 
-    acc = accuracy_score(y_preds, y_gt)
-    writer.add_scalars('val_acc', {'Valid': acc}, writer.iteration)
-    print(f'Valid | acc: {acc:.4f}')
+    # acc = accuracy_score(y_preds, y_gt)
+    # writer.add_scalars('val_acc', {'Valid': acc}, writer.iteration)
+    # print(f'Valid | acc: {acc:.4f}')
 
     for epoch in range(cfg.epochs):
         print('\nEpoch {}/{}'.format(epoch + 1, cfg.epochs))
