@@ -42,7 +42,7 @@ class ArcNet(nn.Module):
         self.base = net
         self.arcface = ArcMarginProduct(512, nc, s=30, m=0.5, easy_margin=False)
     
-    def forward(self, x, label):
+    def forward(self, x, label=None):
         x = self.base(x)
         if self.training:
             x = self.arcface(x, self.training, label)
