@@ -1,7 +1,7 @@
 # AI-checkin
 
 ## Step 1
-- Tải [pretrained](https://drive.google.com/file/d/1LySevGtWg0srT400iG4DrUmJYgS3CaN9/view?usp=sharing) models bao gồm 1 face recognition model checkpoint từ [InsightFace](https://github.com/deepinsight/insightface) và 2 model checkpoints từ opencv
+- Tải [pretrained](https://drive.google.com/file/d/1LySevGtWg0srT400iG4DrUmJYgS3CaN9/view?usp=sharing) models bao gồm 1 face recognition model checkpoint từ [InsightFace](https://github.com/deepinsight/insightface) và 2 model checkpoints từ OpenCV
 ## Step 2
 ```
 conda create -n ckin python=3.8
