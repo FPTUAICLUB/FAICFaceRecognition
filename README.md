@@ -18,6 +18,7 @@ git clone https://github.com/FPTUAICLUB/AI-Checkin.git
 
 ## Step 4
 ```
+export PYTHONPATH=AI-Checkin
 cd AI-Checkin
 python main.py [-e ${PAD}]  
 ```
