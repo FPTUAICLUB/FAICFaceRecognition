@@ -1,4 +1,4 @@
 # AI-checkin
 
-Link data: 
-
+## References
+https://github.com/ronghuaiyang/arcface-pytorch
