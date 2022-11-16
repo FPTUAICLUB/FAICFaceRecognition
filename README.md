@@ -1,6 +1,7 @@
 # AI-checkin
 
 ## Step 1
+- Tải [DroidCam](https://play.google.com/store/apps/details?id=com.dev47apps.droidcam&hl=vi&gl=US) trên điện thoại Android
 - Tải [pretrained](https://drive.google.com/file/d/1LySevGtWg0srT400iG4DrUmJYgS3CaN9/view?usp=sharing) models bao gồm 1 face recognition model checkpoint từ [InsightFace](https://github.com/deepinsight/insightface) và 2 model checkpoints từ OpenCV
 ## Step 2
 ```
@@ -20,5 +21,10 @@ git clone https://github.com/FPTUAICLUB/AI-Checkin.git
 ```
 export PYTHONPATH=AI-Checkin
 cd AI-Checkin
-python main.py [-e ${PAD}]  
+```
+Mở app DroidCam và chạy ```python main.py -u [URL]``` với URL chính là IP Cam Access trên DroidCam. 
+
+Ví dụ:
+```
+python main.py -u http://192.168.1.2:4747/video
 ```

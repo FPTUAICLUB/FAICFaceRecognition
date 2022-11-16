@@ -11,7 +11,8 @@ import os
 
 def get_args():
     parser = argparse.ArgumentParser(description='Face Recognition')
-    parser.add_argument('-a', '--audio-dir', type=str, default='')
+    parser.add_argument('-a', '--audio-dir', type=str, default='audios')
+    parser.add_argument('-u', '--url', type=str, default='')
     parser.add_argument('-e', '--enlarge', type=int, default=20)
     args = parser.parse_args()
     return args    
@@ -119,11 +120,12 @@ class Detector:
 if __name__ == '__main__':
     cfg = get_args()
     enlarge = cfg.enlarge
-
     audio_dir = cfg.audio_dir
+    url = cfg.url
+    url = 0 if len(url) == 0 else url
+
     if not osp.exists(audio_dir):
         os.mkdir(audio_dir)
 
     det = Detector(enlarge, audio_dir)
-    # det.checkInVideo('http://192.168.1.2:4747/video')
-    det.checkInVideo(0)
+    det.checkInVideo(url)
