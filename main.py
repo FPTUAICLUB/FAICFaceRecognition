@@ -7,9 +7,11 @@ from unidecode import unidecode
 import cv2
 from icecream import ic
 from utils.audio import *
+import os
 
 def get_args():
     parser = argparse.ArgumentParser(description='Face Recognition')
+    parser.add_argument('-a', '--audio-dir', type=str, default='')
     parser.add_argument('-e', '--enlarge', type=int, default=20)
     args = parser.parse_args()
     return args    
@@ -24,12 +26,13 @@ def preprocess(face):
     return face
 
 class Detector:
-    def __init__(self, enlarge, threshold=0.5, use_cuda=False):
+    def __init__(self, enlarge, audios, threshold=0.5, use_cuda=False):
         self.known_face_embs = np.squeeze(load_pickle('embedding_data/embed_faces.pkl'), axis=1)
         self.known_names = load_pickle('embedding_data/labels.pkl')
         self.thr = threshold
         self.enlarge = enlarge
         self.ort_sess = ort.InferenceSession('checkpoints/webface_r50.onnx', providers=['CUDAExecutionProvider'])
+        self.audio_dir = audios
 
         # load model
         self.faceModel = cv2.dnn.readNetFromCaffe('checkpoints/res10_300x300_ssd_iter_140000.prototxt',
@@ -90,9 +93,8 @@ class Detector:
                     if max_sim < 0.3:
                         name = 'Người lạ'
 
-                    ic(pre_name, name)
                     if pre_name != name:
-                        play('audios', name)
+                        play(self.audio_dir, name)
                         pre_name = name
 
                     name = unidecode(name)                    
@@ -116,6 +118,12 @@ class Detector:
 
 if __name__ == '__main__':
     cfg = get_args()
-    det = Detector(cfg.enlarge)
+    enlarge = cfg.enlarge
+
+    audio_dir = cfg.audio_dir
+    if not osp.exists(audio_dir):
+        os.mkdir(audio_dir)
+
+    det = Detector(enlarge, audio_dir)
     # det.checkInVideo('http://192.168.1.2:4747/video')
     det.checkInVideo(0)

@@ -6,7 +6,7 @@
 ```
 conda create -n ckin python=3.8
 conda activate ckin
-pip install opencv-python onnxruntime-gpu scikit-learn unidecode tqdm
+pip install opencv-python onnxruntime-gpu scikit-learn unidecode tqdm gTTS playsound
 ```
 
 ## Step 3
