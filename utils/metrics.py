@@ -16,4 +16,5 @@ def most_similarity(embed_vecs, vec, labels):
   sim = np.squeeze(sim, axis = 1)
   argmax = np.argsort(sim)[::-1][:1]
   label = [labels[idx] for idx in argmax][0]
-  return label
+  max_sim = sim[argmax]
+  return float(max_sim), label

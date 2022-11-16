@@ -5,6 +5,7 @@ import argparse
 import onnxruntime as ort
 from unidecode import unidecode
 import cv2
+from icecream import ic
 
 def get_args():
     parser = argparse.ArgumentParser(description='Face Recognition')
@@ -72,6 +73,10 @@ class Detector:
                     # ic(bbox)
                     face = self.img[bbox[1]:bbox[3],
                                     bbox[0]:bbox[2]]
+                    
+                    if face.shape[0] == 0:
+                        break
+
                     # ic(face.shape)
                     # face_pr = preprocess(face)
                     face_pr = preprocess(face)
@@ -79,14 +84,17 @@ class Detector:
                     # using face recognition model
                     input_name = self.ort_sess.get_inputs()[0].name
                     emb = self.ort_sess.run([], {input_name: face_pr})[0]
-                    name = most_similarity(self.known_face_embs, emb, self.known_names)
+                    max_sim, name = most_similarity(self.known_face_embs, emb, self.known_names)
                     name = unidecode(name)
+
+                    if max_sim < 0.3:
+                        name = 'Unknown'
                     
-                    cv2.putText(self.img, name, (bbox[0], bbox[1] - 20), cv2.FONT_HERSHEY_PLAIN,
-                                2, (255, 0, 255), 2)
+                    cv2.putText(self.img, name+f' {max_sim:.2f}', (bbox[0], bbox[1] - 20), cv2.FONT_HERSHEY_PLAIN,
+                                1, (255, 0, 255), 2)    
                     cv2.rectangle(self.img, bbox[:2], bbox[2:4], (255, 0, 255), 2)
 
-                if face is not None:
+                if face.shape[0] != 0:
                     cv2.imshow('Face', face)
                 cv2.imshow('Check In Camera', self.img)
 
