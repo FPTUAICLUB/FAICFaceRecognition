@@ -6,6 +6,7 @@ import onnxruntime as ort
 from unidecode import unidecode
 import cv2
 from icecream import ic
+from utils.audio import *
 
 def get_args():
     parser = argparse.ArgumentParser(description='Face Recognition')
@@ -55,6 +56,7 @@ class Detector:
         return bboxes
 
     def checkInVideo(self, mode):
+        pre_name = None
         cap = cv2.VideoCapture(mode)
 
         if not cap.isOpened():
@@ -68,9 +70,8 @@ class Detector:
             self.height, self.width = self.img.shape[:2]
             while ret:
                 bboxes = self.processFrame()
-
+                
                 for bbox in bboxes:
-                    # ic(bbox)
                     face = self.img[bbox[1]:bbox[3],
                                     bbox[0]:bbox[2]]
                     
@@ -85,16 +86,22 @@ class Detector:
                     input_name = self.ort_sess.get_inputs()[0].name
                     emb = self.ort_sess.run([], {input_name: face_pr})[0]
                     max_sim, name = most_similarity(self.known_face_embs, emb, self.known_names)
-                    name = unidecode(name)
 
                     if max_sim < 0.3:
-                        name = 'Unknown'
+                        name = 'Người lạ'
+
+                    ic(pre_name, name)
+                    if pre_name != name:
+                        play('audios', name)
+                        pre_name = name
+
+                    name = unidecode(name)                    
                     
                     cv2.putText(self.img, name+f' {max_sim:.2f}', (bbox[0], bbox[1] - 20), cv2.FONT_HERSHEY_PLAIN,
                                 1, (255, 0, 255), 2)    
                     cv2.rectangle(self.img, bbox[:2], bbox[2:4], (255, 0, 255), 2)
 
-                if face.shape[0] != 0:
+                if face is not None and face.shape[0] != 0:
                     cv2.imshow('Face', face)
                 cv2.imshow('Check In Camera', self.img)
 
@@ -110,4 +117,5 @@ class Detector:
 if __name__ == '__main__':
     cfg = get_args()
     det = Detector(cfg.enlarge)
+    # det.checkInVideo('http://192.168.1.2:4747/video')
     det.checkInVideo(0)
