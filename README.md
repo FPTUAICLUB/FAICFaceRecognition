@@ -28,3 +28,8 @@ Ví dụ:
 ```
 python main.py -u http://192.168.1.2:4747/video
 ```
+
+## Save new face
+```
+python save_face.py -n [NAME]
+```
