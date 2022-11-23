@@ -7,7 +7,6 @@
 ```
 conda create -n ckin python=3.8
 conda activate ckin
-pip install opencv-python onnxruntime-gpu scikit-learn unidecode tqdm gTTS playsound
 ```
 
 ## Step 3
@@ -21,6 +20,7 @@ git clone https://github.com/FPTUAICLUB/AI-Checkin.git
 ```
 export PYTHONPATH=AI-Checkin
 cd AI-Checkin
+pip install -r requirements.txt
 ```
 Mở app DroidCam và chạy ```python main.py -u [URL]``` với URL chính là IP Cam Access trên DroidCam. 
 

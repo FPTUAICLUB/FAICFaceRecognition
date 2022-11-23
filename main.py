@@ -16,6 +16,7 @@ def get_args():
     parser.add_argument('-a', '--audio-dir', type=str, default='audios')
     parser.add_argument('-u', '--url', type=str, default='')
     parser.add_argument('-e', '--enlarge', type=int, default=20)
+    parser.add_argument('-s', '--save-embeddings', help='Directory to to load face embeddings', type=str, default='embedding_data')
     args = parser.parse_args()
     return args    
 
@@ -29,9 +30,12 @@ def preprocess(face):
     return face
 
 class Detector:
-    def __init__(self, enlarge, audios, threshold=0.5, use_cuda=False):
-        self.known_face_embs = np.squeeze(load_pickle('embedding_data/embed_faces.pkl'), axis=1)
-        self.known_names = load_pickle('embedding_data/labels.pkl')
+    def __init__(self, enlarge, audios, save_embeddings, threshold=0.5, use_cuda=False):
+        self.emb_file = osp.join(save_embeddings, 'embed_faces.pkl')
+        self.name_file = osp.join(save_embeddings, 'labels.pkl')
+
+        self.known_face_embs = np.squeeze(load_pickle(self.emb_file), axis=1)
+        self.known_names = load_pickle(self.name_file)
         self.thr = threshold
         self.enlarge = enlarge
         self.ort_sess = ort.InferenceSession('checkpoints/webface_r50.onnx', providers=['CUDAExecutionProvider'])
@@ -123,11 +127,13 @@ if __name__ == '__main__':
     cfg = get_args()
     enlarge = cfg.enlarge
     audio_dir = cfg.audio_dir
+    save_embeddings = cfg.save_embeddings
+
     url = cfg.url
     url = 0 if len(url) == 0 else url
 
     if not osp.exists(audio_dir):
         os.mkdir(audio_dir)
 
-    det = Detector(enlarge, audio_dir)
+    det = Detector(enlarge, audio_dir, save_embeddings)
     det.checkInVideo(url)

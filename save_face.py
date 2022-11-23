@@ -11,27 +11,39 @@ from utils.audio import *
 import os
 import time
 from main import preprocess
+import os.path as osp
 
 def get_args():
     parser = argparse.ArgumentParser(description='Face Recognition')
     parser.add_argument('-e', '--enlarge', help='Enlarging face bboxes in 4 directions', type=int, default=20)
     parser.add_argument('-n', '--name', help='Name of saved face',type=str, default='')
     parser.add_argument('-r', '--restart', help='Restart saving faces from zero', action='store_true')
-    parser.add_argument('-s', '--save-embeddings', help='Save face embedding', action='store_true')
+    parser.add_argument('-s', '--save-embeddings', help='Directory to save face embeddings', type=str, default=None)
     args = parser.parse_args()
     return args    
 
 class Detector:
-    def __init__(self, enlarge, name, restart, save_embeddings=False, threshold=0.5, use_cuda=True):
+    def __init__(self, enlarge, name, restart, save_embeddings=None, threshold=0.5, use_cuda=True):
 
         self.name = name
         self.thr = threshold
         self.enlarge = enlarge
         self.restart = restart
         self.save_embeddings = save_embeddings
+
         if save_embeddings:
-            self.known_face_embs = load_pickle('embedding_data/embed_faces.pkl')
-            self.known_names = load_pickle('embedding_data/labels.pkl')
+            os.makedirs(save_embeddings, exist_ok=True)
+
+            self.emb_file = osp.join(save_embeddings, 'embed_faces.pkl')
+            self.name_file = osp.join(save_embeddings, 'labels.pkl')
+
+            if len(os.listdir(save_embeddings)) == 0:
+                self.known_face_embs = []
+                self.known_names = []
+            else:
+                self.known_face_embs = load_pickle(self.emb_file)
+                self.known_names = load_pickle(self.name_file)
+
             self.ort_sess = ort.InferenceSession('checkpoints/webface_r50.onnx', providers=['CUDAExecutionProvider'])
             ic(len(self.known_face_embs))
 
@@ -61,7 +73,7 @@ class Detector:
 
     def checkInVideo(self, mode):
         new_face_dir = osp.join('new_faces', self.name)
-        if restart:
+        if restart and osp.exists(new_face_dir):
             shutil.rmtree(new_face_dir)
         os.makedirs(new_face_dir, exist_ok=True)
 
@@ -95,12 +107,11 @@ class Detector:
                     face_pr = preprocess(face)
                     input_name = self.ort_sess.get_inputs()[0].name
                     emb = self.ort_sess.run([], {input_name: face_pr})[0]
-                    # self.known_face_embs = np.append(self.known_face_embs, emb, axis=0)
                     self.known_face_embs.append(emb)
                     self.known_names.append(self.name)
 
-                    save_pickle(self.known_face_embs, 'embedding_data/embed_faces.pkl')
-                    save_pickle(self.known_names, 'embedding_data/labels.pkl')
+                    save_pickle(self.known_face_embs, self.emb_file)
+                    save_pickle(self.known_names, self.name_file)
 
                     cv2.imwrite(osp.join(new_face_dir, str(count)+'.jpg'), face)
                     count += 1

@@ -1,0 +1,7 @@
+opencv-python
+onnxruntime-gpu 
+scikit-learn 
+unidecode 
+tqdm 
+gTTS
+pygame
