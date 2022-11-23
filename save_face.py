@@ -87,18 +87,20 @@ class Detector:
                 for bbox in bboxes:
                     face = self.img[bbox[1]:bbox[3],
                                     bbox[0]:bbox[2]]
-                    
-                    if self.save_embeddings and face.shape[0]*face.shape[1] != 0:
-                        face_pr = preprocess(face)
-                        input_name = self.ort_sess.get_inputs()[0].name
-                        emb = self.ort_sess.run([], {input_name: face_pr})[0]
+                                            
 
                     cv2.rectangle(self.img, bbox[:2], bbox[2:4], (255, 0, 255), 2)
 
-                if face.shape[0]*face.shape[1] != 0 and t2 - t1 >= 1:
-                    ic(count)
+                if face.shape[0]*face.shape[1] != 0 and t2 - t1 >= 1 and self.save_embeddings:
+                    face_pr = preprocess(face)
+                    input_name = self.ort_sess.get_inputs()[0].name
+                    emb = self.ort_sess.run([], {input_name: face_pr})[0]
                     self.known_face_embs = np.append(self.known_face_embs, emb, axis=0)
                     self.known_names.append(self.name)
+
+                    save_pickle(self.known_face_embs, 'embedding_data/embed_faces.pkl')
+                    save_pickle(self.known_names, 'embedding_data/labels.pkl')
+
                     cv2.imwrite(osp.join(new_face_dir, str(count)+'.jpg'), face)
                     count += 1
                     t1 = t2
