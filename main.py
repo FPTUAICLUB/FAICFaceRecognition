@@ -8,7 +8,9 @@ import cv2
 from icecream import ic
 from utils.audio import *
 import os
-
+from pygame import mixer
+import time
+ 
 def get_args():
     parser = argparse.ArgumentParser(description='Face Recognition')
     parser.add_argument('-a', '--audio-dir', type=str, default='audios')
@@ -91,7 +93,7 @@ class Detector:
                     emb = self.ort_sess.run([], {input_name: face_pr})[0]
                     max_sim, name = most_similarity(self.known_face_embs, emb, self.known_names)
 
-                    if max_sim < 0.3:
+                    if max_sim < 0.25:
                         name = 'Người lạ'
 
                     if pre_name != name:

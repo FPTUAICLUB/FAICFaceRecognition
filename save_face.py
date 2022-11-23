@@ -30,10 +30,10 @@ class Detector:
         self.restart = restart
         self.save_embeddings = save_embeddings
         if save_embeddings:
-            self.known_face_embs = np.squeeze(load_pickle('embedding_data/embed_faces.pkl'), axis=1)
+            self.known_face_embs = load_pickle('embedding_data/embed_faces.pkl')
             self.known_names = load_pickle('embedding_data/labels.pkl')
             self.ort_sess = ort.InferenceSession('checkpoints/webface_r50.onnx', providers=['CUDAExecutionProvider'])
-            ic(self.known_face_embs.shape[0])
+            ic(len(self.known_face_embs))
 
         # load model
         self.faceModel = cv2.dnn.readNetFromCaffe('checkpoints/res10_300x300_ssd_iter_140000.prototxt',
@@ -68,7 +68,7 @@ class Detector:
         t1 = time.time()
         face = None
         count = len(os.listdir(new_face_dir))+1
-        limit = count + 9
+        limit = count + 4
 
         cap = cv2.VideoCapture(mode)
 
@@ -91,11 +91,12 @@ class Detector:
 
                     cv2.rectangle(self.img, bbox[:2], bbox[2:4], (255, 0, 255), 2)
 
-                if face.shape[0]*face.shape[1] != 0 and t2 - t1 >= 1 and self.save_embeddings:
+                if face is not None and face.shape[0]*face.shape[1] != 0 and t2 - t1 >= 1 and self.save_embeddings:
                     face_pr = preprocess(face)
                     input_name = self.ort_sess.get_inputs()[0].name
                     emb = self.ort_sess.run([], {input_name: face_pr})[0]
-                    self.known_face_embs = np.append(self.known_face_embs, emb, axis=0)
+                    # self.known_face_embs = np.append(self.known_face_embs, emb, axis=0)
+                    self.known_face_embs.append(emb)
                     self.known_names.append(self.name)
 
                     save_pickle(self.known_face_embs, 'embedding_data/embed_faces.pkl')
@@ -113,7 +114,7 @@ class Detector:
 
                 ret, self.img = cap.read()
 
-            ic(self.known_face_embs.shape[0])
+            ic(len(self.known_face_embs))
             cap.release()
             cv2.destroyAllWindows()
 
