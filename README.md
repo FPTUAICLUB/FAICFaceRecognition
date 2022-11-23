@@ -26,10 +26,10 @@ Mở app DroidCam và chạy ```python main.py -u [URL]``` với URL chính là 
 
 Ví dụ:
 ```
-python main.py -u http://192.168.1.2:4747/video
+python main.py -u http://192.168.1.2:4747/video -s [EMBEDDING_DIRECTORY]
 ```
 
 ## Save new face
 ```
-python save_face.py -n [NAME]
+python save_face.py -n [NAME] -s [EMBEDDING_DIRECTORY]
 ```
