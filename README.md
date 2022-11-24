@@ -22,11 +22,11 @@ export PYTHONPATH=AI-Checkin
 cd AI-Checkin
 pip install -r requirements.txt
 ```
-Mở app DroidCam và chạy ```python main.py -u [URL]``` với URL chính là IP Cam Access trên DroidCam. 
+Mở app DroidCam và chạy ```python main.py -u [URL] -s [Tên directory lưu embedding]``` với URL chính là IP Cam Access trên DroidCam. 
 
 Ví dụ:
 ```
-python main.py -u http://192.168.1.2:4747/video -s [EMBEDDING_DIRECTORY]
+python main.py -u http://192.168.1.2:4747/video -s new_embedding
 ```
 
 ## Save new face
