@@ -1,6 +1,6 @@
 # About AI-checkin
-Project thuộc về quyền sở hữu của FPTU AI Club - FAIC Đại học FPT Hà Nội
-Project được phát triển nhằm hỗ trợ công việc Checkin cửa vào cho sự kiện Retro9
+Project thuộc về quyền sở hữu của FPTU AI Club - FAIC Đại học FPT Hà Nội, được phát triển nhằm hỗ trợ công việc Checkin cửa vào cho sự kiện Retro9 \
+AI-checkin sử dụng pretrained InsightFace cùng với MTCNN là công nghệ chính
 # AI-checkin
 
 ## Step 1
